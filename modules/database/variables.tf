@@ -73,6 +73,11 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "subnet_ids" {
+  description = "List of subnet IDs to use for the Aurora cluster"
+  type        = list(string)
+}
+
 variable "allowed_cidr_blocks" {
   description = "The CIDR blocks allowed to access the cluster"
   type        = list(string)

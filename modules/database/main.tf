@@ -18,6 +18,16 @@ resource "aws_rds_cluster" "aurora_serverless" {
   }
 
   vpc_security_group_ids = [aws_security_group.aurora_sg.id]
+  db_subnet_group_name   = aws_db_subnet_group.aurora.name
+}
+
+resource "aws_db_subnet_group" "aurora" {
+  name       = "${var.cluster_identifier}-subnet-group"
+  subnet_ids = var.subnet_ids
+
+  tags = {
+    Name = "${var.cluster_identifier}-subnet-group"
+  }
 }
 
 resource "aws_security_group" "aurora_sg" {
@@ -37,5 +47,9 @@ resource "aws_security_group" "aurora_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.cluster_identifier}-sg"
   }
 }
