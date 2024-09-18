@@ -3,9 +3,10 @@ import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import boto3
 from botocore.exceptions import ClientError
+import json
 
 def get_secret():
-    secret_name = "aurora-password-secret"
+    secret_name = "my-aurora-serverless-secret"
     region_name = "us-west-2"  # Change this to your AWS region
 
     session = boto3.session.Session()
@@ -25,11 +26,12 @@ def get_secret():
 
 def run_sql_commands():
     # Database connection parameters
+    secret = json.loads(get_secret())
     db_params = {
         'dbname': 'myapp',
         'user': 'dbadmin',
-        'password': get_secret(),
-        'host': os.environ.get('DB_HOST'),
+        'password': secret['password'],
+        'host': secret['host'],
         'port': '5432'
     }
 
