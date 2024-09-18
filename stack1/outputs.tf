@@ -18,14 +18,6 @@ output "public_subnet_ids" {
   value = module.vpc.public_subnets
 }
 
-output "bedrock_knowledge_base_id" {
-  value = module.bedrock_kb.id
-}
-
-output "bedrock_knowledge_base_arn" {
-  value = module.bedrock_kb.arn
-}
-
 output "aurora_endpoint" {
   value = module.aurora_serverless.cluster_endpoint
 }

@@ -6,9 +6,10 @@ resource "aws_rds_cluster" "aurora_serverless" {
   database_name           = var.database_name
   master_username         = var.master_username
   master_password         = random_password.master_password.result
-  backup_retention_period = var.backup_retention_period
-  preferred_backup_window = var.preferred_backup_window
+  backup_retention_period = 0
   enable_http_endpoint    = true
+  skip_final_snapshot     = true
+  apply_immediately       = true
 
   allow_major_version_upgrade = true
 
@@ -68,7 +69,8 @@ resource "random_password" "master_password" {
 }
 
 resource "aws_secretsmanager_secret" "aurora_secret" {
-  name = "${var.cluster_identifier}-secret"
+  name = "${var.cluster_identifier}"
+  recovery_window_in_days = 0
 }
 
 resource "aws_secretsmanager_secret_version" "aurora_secret_version" {

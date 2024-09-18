@@ -24,7 +24,7 @@ variable "master_username" {
 variable "backup_retention_period" {
   description = "The days to retain backups for"
   type        = number
-  default     = 7
+  default     = 0
 }
 
 variable "preferred_backup_window" {
