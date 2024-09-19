@@ -140,6 +140,19 @@ To use it:
 2. Optionally, update the `prefix` variable if you want to upload to a specific path in the bucket.
 3. Run `python scripts/upload_to_s3.py`.
 
+## Complete chat app
+
+### Complete invoke model and knoweldge base code
+- Open the bedrock_utils.py file and the following functions:
+  - query_knowledge_base
+  - generate_response
+
+### Complete the prompt validation function
+- Open the bedrock_utils.py file and the following function:
+  - valid_prompt
+
+  Hint: categorize the user prompt
+
 ## Troubleshooting
 
 - If you encounter permissions issues, ensure your AWS credentials have the necessary permissions for creating all the resources.
