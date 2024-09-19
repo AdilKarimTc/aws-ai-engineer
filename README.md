@@ -16,16 +16,20 @@ This project sets up an AWS Bedrock Knowledge Base integrated with an Aurora Ser
 
 This project consists of several components:
 
-1. Terraform configuration for creating:
+1. Stack 1 - Terraform configuration for creating:
    - A VPC
    - An Aurora Serverless PostgreSQL cluster
+   - s3 Bucket to hold documents
+   - Necessary IAM roles and policies
+
+2. Stack 2 - Terraform configuration for creating:
    - A Bedrock Knowledge Base
    - Necessary IAM roles and policies
 
-2. A Python script for setting up the Aurora database schema
-3. A Python script for uploading files to an S3 bucket
+3. A set of SQL queries to prepare the Postgres database for vector storage
+4. A Python script for uploading files to an s3 bucket
 
-The goal is to create a Bedrock Knowledge Base that can leverage data stored in an Aurora Serverless database, with the ability to easily upload supporting documents to S3.
+The goal is to create a Bedrock Knowledge Base that can leverage data stored in an Aurora Serverless database, with the ability to easily upload supporting documents to S3. This will allow us to ask the LLM for information from the documentation.
 
 ## Prerequisites
 
@@ -33,7 +37,7 @@ Before you begin, ensure you have the following:
 
 - AWS CLI installed and configured with appropriate credentials
 - Terraform installed (version 0.12 or later)
-- Python 3.6 or later
+- Python 3.10 or later
 - pip (Python package manager)
 
 ## Project Structure
@@ -41,7 +45,16 @@ Before you begin, ensure you have the following:
 ```
 project-root/
 │
-├── main.tf
+├── stack1
+|   ├── main.tf
+|   ├── outputs.tf
+|   └── variables.tf
+|
+├── stack2
+|   ├── main.tf
+|   ├── outputs.tf
+|   └── variables.tf
+|
 ├── modules/
 │   ├── aurora_serverless/
 │   │   ├── main.tf
@@ -53,11 +66,11 @@ project-root/
 │       └── outputs.tf
 │
 ├── scripts/
-│   ├── aurora_setup.py
+│   ├── aurora_sql.sql
 │   └── upload_to_s3.py
 │
 ├── spec-sheets/
-│   └── (your specification sheet files)
+│   └── machine_files.pdf
 │
 └── README.md
 ```
@@ -66,7 +79,7 @@ project-root/
 
 1. Clone this repository to your local machine.
 
-2. Navigate to the project root directory.
+2. Navigate to the project Stack 1. This stack includes VPC, Aurora servlerless and S3
 
 3. Initialize Terraform:
    ```
@@ -77,7 +90,7 @@ project-root/
    - AWS region
    - VPC CIDR block
    - Aurora Serverless configuration
-   - Bedrock Knowledge Base name
+   - s3 bucket
 
 5. Deploy the infrastructure:
    ```
@@ -87,35 +100,34 @@ project-root/
 
 6. After the Terraform deployment is complete, note the outputs, particularly the Aurora cluster endpoint.
 
-7. Set up your Python environment:
+7. Prepare the Aurora Postgres database. This is done by running the sql queries in the script/ folder. This can be done through Amazon RDS console and the Query Editor.
+
+8. Navigate to the project Stack 2. This stack includes Bedrock Knowledgebase
+
+9. Initialize Terraform:
    ```
-   pip install psycopg2-binary boto3
+   terraform init
    ```
 
-8. Run the Aurora setup script:
-   ```
-   export DB_HOST=<your-aurora-cluster-endpoint>
-   python scripts/aurora_setup.py
-   ```
+10. Use the values outputs of the stack 1 to modify the values in `main.tf` as needed:
+     - Bedrock Knowledgebase configuration
 
-9. If you want to upload files to S3, place your files in the `spec-sheets` folder and run:
-   ```
-   python scripts/upload_to_s3.py
-   ```
-   Make sure to update the S3 bucket name in the script before running.
+11. Deploy the infrastructure:
+      ```
+      terraform apply
+      ```
+      - Review the planned changes and type "yes" to confirm.
+
+
+12. Upload pdf files to S3, place your files in the `spec-sheets` folder and run:
+      ```
+      python scripts/upload_to_s3.py
+      ```
+      - Make sure to update the S3 bucket name in the script before running.
+
+13. Sync the data source in the knowledgebase to make it available to the LLM.
 
 ## Using the Scripts
-
-### Aurora Setup Script
-
-The `aurora_setup.py` script does the following:
-- Connects to your Aurora Serverless database
-- Creates the necessary extensions, schema, and tables
-- Sets up the `bedrock_user` role
-
-To use it:
-1. Ensure the `DB_HOST` environment variable is set to your Aurora cluster endpoint.
-2. Run `python scripts/aurora_setup.py`.
 
 ### S3 Upload Script
 
@@ -127,13 +139,6 @@ To use it:
 1. Update the `bucket_name` variable in the script with your S3 bucket name.
 2. Optionally, update the `prefix` variable if you want to upload to a specific path in the bucket.
 3. Run `python scripts/upload_to_s3.py`.
-
-## Customization
-
-- To modify the VPC configuration, edit the `vpc` module call in `main.tf`.
-- To change Aurora Serverless settings, modify the `aurora_serverless` module in `modules/aurora_serverless/main.tf`.
-- To adjust the Bedrock Knowledge Base configuration, edit the `bedrock_kb` module in `modules/bedrock_kb/main.tf`.
-- For different database schema or table structures, modify the SQL commands in `scripts/aurora_setup.py`.
 
 ## Troubleshooting
 
