@@ -52,6 +52,7 @@ module "s3_bucket" {
 
   bucket = local.bucket_name
   acl    = "private"
+  force_destroy = true
 
   control_object_ownership = true
   object_ownership         = "BucketOwnerPreferred"
