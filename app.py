@@ -10,10 +10,10 @@ st.title("Bedrock Chat Application")
 
 # Sidebar for configurations
 st.sidebar.header("Configuration")
-model_id = st.sidebar.selectbox("Select LLM Model", ["anthropic.claude-v2", "ai21.j2-ultra", "amazon.titan-text-express-v1"])
+model_id = st.sidebar.selectbox("Select LLM Model", ["anthropic.claude-3-haiku-20240307-v1:0", "anthropic.claude-3-5-sonnet-20240620-v1:0"])
 kb_id = st.sidebar.text_input("Knowledge Base ID", "your-knowledge-base-id")
-temperature = st.sidebar.select_slider("Temperature", [i/10 for i in range(0,11)])
-top_p = st.sidebar.select_slider("Top_P", [i/1000 for i in range(0,1001)])
+temperature = st.sidebar.select_slider("Temperature", [i/10 for i in range(0,11)],1)
+top_p = st.sidebar.select_slider("Top_P", [i/1000 for i in range(0,1001)], 1)
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -38,7 +38,7 @@ if prompt := st.chat_input("What would you like to know?"):
         context = "\n".join([result['content']['text'] for result in kb_results])
         
         # Generate response using LLM
-        full_prompt = f"Human:Context: {context}\n\nUser: {prompt}\n\nAssistant:"
+        full_prompt = f"Context: {context}\n\nUser: {prompt}\n\n"
         response = generate_response(full_prompt, model_id, temperature, top_p)
     else:
         response = "I'm unable to answer this, please try again"
