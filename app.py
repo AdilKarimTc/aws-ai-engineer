@@ -2,7 +2,7 @@ import streamlit as st
 import boto3
 from botocore.exceptions import ClientError
 import json
-from bedrock_utils import query_knowledge_base, generate_response
+from bedrock_utils import query_knowledge_base, generate_response, valid_prompt
 
 
 # Streamlit UI
@@ -30,15 +30,18 @@ if prompt := st.chat_input("What would you like to know?"):
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Query Knowledge Base
-    kb_results = query_knowledge_base(prompt, kb_id)
-    
-    # Prepare context from Knowledge Base results
-    context = "\n".join([result['content']['text'] for result in kb_results])
-    
-    # Generate response using LLM
-    full_prompt = f"Human:Context: {context}\n\nUser: {prompt}\n\nAssistant:"
-    response = generate_response(full_prompt, model_id, temperature, top_p)
+    if valid_prompt(prompt, model_id):
+        # Query Knowledge Base
+        kb_results = query_knowledge_base(prompt, kb_id)
+        
+        # Prepare context from Knowledge Base results
+        context = "\n".join([result['content']['text'] for result in kb_results])
+        
+        # Generate response using LLM
+        full_prompt = f"Human:Context: {context}\n\nUser: {prompt}\n\nAssistant:"
+        response = generate_response(full_prompt, model_id, temperature, top_p)
+    else:
+        response = "I'm unable to answer this, please try again"
     
     # Display assistant response
     with st.chat_message("assistant"):
