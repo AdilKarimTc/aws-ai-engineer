@@ -2,54 +2,8 @@ import streamlit as st
 import boto3
 from botocore.exceptions import ClientError
 import json
+from bedrock_utils import query_knowledge_base, generate_response
 
-# Initialize AWS Bedrock client
-bedrock = boto3.client(
-    service_name='bedrock-runtime',
-    region_name='us-west-2'  # Replace with your AWS region
-)
-
-# Initialize Bedrock Knowledge Base client
-bedrock_kb = boto3.client(
-    service_name='bedrock-agent-runtime',
-    region_name='us-west-2'  # Replace with your AWS region
-)
-
-def query_knowledge_base(query, kb_id):
-    try:
-        response = bedrock_kb.retrieve(
-            knowledgeBaseId=kb_id,
-            retrievalQuery={
-                'text': query
-            },
-            retrievalConfiguration={
-                'vectorSearchConfiguration': {
-                    'numberOfResults': 3
-                }
-            }
-        )
-        return response['retrievalResults']
-    except ClientError as e:
-        st.error(f"Error querying Knowledge Base: {e}")
-        return []
-
-def generate_response(prompt, model_id):
-    try:
-        response = bedrock.invoke_model(
-            modelId=model_id,
-            contentType='application/json',
-            accept='application/json',
-            body=json.dumps({
-                "prompt": prompt,
-                "max_tokens_to_sample": 300,
-                "temperature": 0.7,
-                "top_p": 0.9,
-            })
-        )
-        return json.loads(response['body'].read())['completion']
-    except ClientError as e:
-        st.error(f"Error generating response: {e}")
-        return ""
 
 # Streamlit UI
 st.title("Bedrock Chat Application")
@@ -58,6 +12,8 @@ st.title("Bedrock Chat Application")
 st.sidebar.header("Configuration")
 model_id = st.sidebar.selectbox("Select LLM Model", ["anthropic.claude-v2", "ai21.j2-ultra", "amazon.titan-text-express-v1"])
 kb_id = st.sidebar.text_input("Knowledge Base ID", "your-knowledge-base-id")
+temperature = st.sidebar.select_slider("Temperature", [i/10 for i in range(0,11)])
+top_p = st.sidebar.select_slider("Top_P", [i/1000 for i in range(0,1001)])
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -82,7 +38,7 @@ if prompt := st.chat_input("What would you like to know?"):
     
     # Generate response using LLM
     full_prompt = f"Human:Context: {context}\n\nUser: {prompt}\n\nAssistant:"
-    response = generate_response(full_prompt, model_id)
+    response = generate_response(full_prompt, model_id, temperature, top_p)
     
     # Display assistant response
     with st.chat_message("assistant"):
