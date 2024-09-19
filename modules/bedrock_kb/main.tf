@@ -73,7 +73,8 @@ resource "aws_iam_policy" "bedrock_kb_rds_access" {
           "rds:DescribeDBInstances",
           "rds:DescribeDBSubnetGroups",
           "rds:ListTagsForResource",
-          "s3:ListBucket"
+          "s3:ListBucket",
+          "s3:GetObject"
         ]
         Resource = "*"
       },
