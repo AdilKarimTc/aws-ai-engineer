@@ -60,6 +60,7 @@ __pycache__/**
 
 # Ignore large local ZIP submissions
 Karim_Adil_ProjectSubmission.zip
+configure_aws.bat
 # Terraform backups and plan logs
 *.tfstate.backup
 terraform_apply.log
