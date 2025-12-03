@@ -3,8 +3,9 @@ import boto3
 from botocore.exceptions import ClientError
 
 def upload_files_to_s3(folder_path, bucket_name, prefix=""):
-    # Initialize S3 client
-    s3_client = boto3.client('s3')
+    # Initialize S3 client with default profile
+    session = boto3.Session(profile_name='default')
+    s3_client = session.client('s3')
 
     # Check if the folder exists
     if not os.path.exists(folder_path):
@@ -29,10 +30,10 @@ def upload_files_to_s3(folder_path, bucket_name, prefix=""):
 
 if __name__ == "__main__":
     # Folder path
-    folder_path = "spec-sheets"
+    folder_path = "scripts/spec-sheets"
     
-    # S3 bucket name
-    bucket_name = "bedrock-kb-975050171524"  # Replace with your actual bucket name
+    # S3 bucket name - Updated from Stack 1 Terraform output
+    bucket_name = "bedrock-kb-401040007987"
     
     # S3 prefix (optional)
     prefix = "spec-sheets" 

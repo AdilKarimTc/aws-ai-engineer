@@ -1,5 +1,4 @@
 
-
 resource "aws_iam_role" "bedrock_kb_role" {
   name = "${var.knowledge_base_name}-role"
 
@@ -90,23 +89,26 @@ resource "aws_iam_policy" "bedrock_kb_rds_access" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "rds_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "bedrock_kb_rds_access_attachment" {
   policy_arn = aws_iam_policy.bedrock_kb_rds_access.arn
   role       = aws_iam_role.bedrock_kb_role.name
 }
 
-resource "time_sleep" "wait_10_seconds" {
-  depends_on = [aws_iam_role_policy_attachment.bedrock_kb_policy]
-
-  create_duration = "10s"
+resource "time_sleep" "wait_30_seconds" {
+  depends_on = [
+    aws_iam_role_policy_attachment.bedrock_kb_policy,
+    aws_iam_role_policy_attachment.rds_data_api_policy_attachment,
+    aws_iam_role_policy_attachment.bedrock_kb_rds_access_attachment
+  ]
+  create_duration = "30s"
 }
 
 resource "aws_bedrockagent_knowledge_base" "main" {
-  name = var.knowledge_base_name
+  name     = var.knowledge_base_name
   role_arn = aws_iam_role.bedrock_kb_role.arn
   knowledge_base_configuration {
     vector_knowledge_base_configuration {
-      embedding_model_arn = "arn:aws:bedrock:us-west-2::foundation-model/amazon.titan-embed-text-v1"
+      embedding_model_arn = "arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v1"
     }
     type = "VECTOR"
   }
@@ -126,7 +128,7 @@ resource "aws_bedrockagent_knowledge_base" "main" {
 
     }
   }
-  depends_on = [ time_sleep.wait_10_seconds ]
+  depends_on = [ time_sleep.wait_30_seconds ]
 }
 
 data "aws_caller_identity" "current" {}

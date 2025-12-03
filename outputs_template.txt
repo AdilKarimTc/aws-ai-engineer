@@ -1,0 +1,38 @@
+# AWS Bedrock Project - Outputs Tracker
+
+## PHASE 2 OUTPUTS (Stack 1) ✅
+
+aurora_cluster_endpoint = my-aurora-serverless.cluster-cic79iy4objl.us-east-1.rds.amazonaws.com
+
+aurora_cluster_arn = arn:aws:rds:us-east-1:401040007987:cluster:my-aurora-serverless
+
+db_secret_arn = arn:aws:secretsmanager:us-east-1:401040007987:secret:auroraserverlessdb-TYKQc4kG
+
+s3_bucket_name = bedrock-kb-401040007987
+
+s3_bucket_arn = arn:aws:s3:::bedrock-kb-401040007987
+
+vpc_id = vpc-05f09ae668d30d2b4
+
+
+## PHASE 4 OUTPUTS (Stack 2)
+Save these values after running "terraform apply" in stack2:
+
+knowledge_base_id = 
+
+
+## AWS Account Information
+Run: aws sts get-caller-identity
+
+account_id = 401040007987
+
+
+## Update Checklist
+Use the outputs above to update these files:
+
+[ ] stack2/main.tf - Line 11: aurora_arn
+[ ] stack2/main.tf - Line 13: aurora_endpoint  
+[ ] stack2/main.tf - Line 20: aurora_secret_arn
+[ ] stack2/main.tf - Line 21: s3_bucket_arn
+[ ] scripts/upload_s3.py - Line 35: bucket_name
+[ ] app.py - Line 14: kb_id (default value)

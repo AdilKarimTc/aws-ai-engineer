@@ -56,7 +56,7 @@ __pycache__/**
 .idea/
 
 # Screenshots and large assets
-screenshots/
+# (kept unignored to allow committing screenshots when requested)
 
 # Terraform backups and plan logs
 *.tfstate.backup
