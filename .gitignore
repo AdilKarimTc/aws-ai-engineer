@@ -58,6 +58,8 @@ __pycache__/**
 # Screenshots and large assets
 # (kept unignored to allow committing screenshots when requested)
 
+# Ignore large local ZIP submissions
+Karim_Adil_ProjectSubmission.zip
 # Terraform backups and plan logs
 *.tfstate.backup
 terraform_apply.log
