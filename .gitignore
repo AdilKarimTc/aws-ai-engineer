@@ -37,3 +37,27 @@ override.tf.json
 .terraformrc
 terraform.rc
 __pycache__/**
+
+# Local AWS credentials and config files
+.aws-credentials
+.aws-config
+
+# Streamlit local files
+.streamlit/
+
+# Logs, backups and swap files
+*.log
+*.log.*
+*.bak
+*.swp
+
+# Editor directories
+.vscode/
+.idea/
+
+# Screenshots and large assets
+screenshots/
+
+# Terraform backups and plan logs
+*.tfstate.backup
+terraform_apply.log
